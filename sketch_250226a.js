@@ -28,7 +28,7 @@ function setup() {
 
   sizeLabel = createSpan("Texture Size: ");
   sizeLabel.position(10, 65);
-  sizeSlider = createSlider(256, 1024, textureSize, 32);
+  sizeSlider = createSlider(100, 1024, textureSize, 32);
   sizeSlider.position(100, 70);
 
   setupGrid();
@@ -103,8 +103,16 @@ function draw() {
   for (let x = 0; x < textureSize; x++) {
     for (let y = 0; y < textureSize; y++) {
       let b = grid[x][y].b;
-      let c = color(255 * (1 - b), 50, 255 * b, 255); // Más contraste con magenta y blanco
-      img.set(x, y, c);
+      
+      // Define el color base del modelo (puede ser amarillo)
+      let baseColor = color(255, 200, 50); // Amarillo
+      // Define el color de las líneas (puede ser negro o cualquier otro)
+      let lineColor = color(0, 0, 0, 255 * b); // Líneas en negro con transparencia
+      
+      // Mezcla el color base con las líneas de la textura
+      let finalColor = lerpColor(baseColor, lineColor, b);
+      
+      img.set(x, y, finalColor);
     }
   }
   img.updatePixels();
