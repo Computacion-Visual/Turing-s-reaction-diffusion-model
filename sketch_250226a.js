@@ -1,5 +1,5 @@
 let grid, next;
-let dA = 1.0, dB = 0.3, feed = 0.06, kill = 0.065;
+let dA = 1.0, dB = 0.2, feed = 0.07, kill = 0.055;
 let cols, rows, colorA, colorB;
 let graphics;  // Buffer para la textura
 let tigre;     // Modelo 3D del tigre
