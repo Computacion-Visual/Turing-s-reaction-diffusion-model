@@ -4,6 +4,14 @@ let cols, rows, colorA, colorB;
 let graphics;  // Buffer para la textura
 let tigre;     // Modelo 3D del tigre
 
+// Variables para Phong Illumination
+let lightColor;
+let lightDirection;
+
+// Botones y controles
+let colorAPicker, colorBPicker;
+let feedSlider, killSlider, dASlider, dBSlider;
+
 function preload() {
   tigre = loadModel('tiger.obj', true);  // Cargar modelo
 }
@@ -18,9 +26,38 @@ function setup() {
   graphics = createGraphics(cols, rows);
   graphics.pixelDensity(1);
 
-  // Definir colores
-  colorA = color(255, 165, 0);
-  colorB = color(139, 69, 19);
+  // Definir colores iniciales
+  colorA = color(255, 165, 0);  // Naranja
+  colorB = color(139, 69, 19);  // Café
+
+  // Configurar Phong Illumination
+  lightColor = color(255, 255, 255);  // Luz blanca
+  lightDirection = createVector(-1, 1,-1).normalize();  // Luz en diagonal
+
+  // Crear controles de interfaz
+  createP("Color A:").position(70, 20);
+  colorAPicker = createColorPicker(colorA);
+  colorAPicker.position(10, 30);
+
+  createP("Color B:").position(70, 80);
+  colorBPicker = createColorPicker(colorB);
+  colorBPicker.position(10, 90);
+
+  createP("Feed Rate (0.01 - 0.1):").position(10, 120);
+  feedSlider = createSlider(0.01, 0.1, feed, 0.001);
+  feedSlider.position(10, 150);
+
+  createP("Kill Rate (0.01 - 0.1):").position(10, 170);
+  killSlider = createSlider(0.01, 0.1, kill, 0.001);
+  killSlider.position(10, 200);
+
+  createP("Difusión A (0.1 - 2.0):").position(10, 220);
+  dASlider = createSlider(0.1, 2.0, dA, 0.1);
+  dASlider.position(10, 250);
+
+  createP("Difusión B (0.1 - 2.0):").position(10, 270);
+  dBSlider = createSlider(0.1, 2.0, dB, 0.1);
+  dBSlider.position(10, 300);
 
   // Inicializar matrices
   grid = Array.from({ length: cols }, () => Array.from({ length: rows }, () => ({ a: 1, b: 0 })));
@@ -39,7 +76,15 @@ function setup() {
 function draw() {
   background(200);
   orbitControl();
-  
+
+  // Actualizar valores desde los controles
+  colorA = colorAPicker.color();
+  colorB = colorBPicker.color();
+  feed = feedSlider.value();
+  kill = killSlider.value();
+  dA = dASlider.value();
+  dB = dBSlider.value();
+
   // Generar textura
   graphics.loadPixels();
   for (let x = 0; x < cols; x++) {
@@ -72,11 +117,16 @@ function draw() {
   }
   [grid, next] = [next, grid];
 
+  // Configurar Phong Illumination
+  lights();
+  directionalLight(lightColor, lightDirection.x, lightDirection.y, lightDirection.z);
+  specularMaterial(200);  // Ajusta el brillo del material
+
   // Dibujar el tigre con textura
   push();
   rotateY(PI/2);         // Rotar 180° en Y
-  rotateX(PI);     // Rotar 90° en X
-  texture(graphics);   // Aplicar la textura generada
+  rotateX(PI);           // Rotar 90° en X
+  texture(graphics);     // Aplicar la textura generada
   model(tigre);
   pop();
 }
